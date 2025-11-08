@@ -21,8 +21,6 @@ with tab1:
   st.write(df.describe())
 
 with tab2:
- st.subheader("Basic Structure")
- st.write(data_structure_d)
  st.subheader("About the Dataset")
  st.markdown("""
 This dataset is sourced from **Kaggle’s Telco Customer Churn** dataset, originally created by **IBM Sample Data Sets**.
@@ -45,3 +43,5 @@ To understand and predict customer churn through exploratory data analysis and m
 **Source:**  
 [IBM Telco Customer Churn Dataset](https://community.ibm.com/community/user/businessanalytics/blogs/steven-macko/2019/07/11/telco-customer-churn-1113)
 """)
+ st.subheader("Basic Structure")
+ st.write(data_structure_d)
