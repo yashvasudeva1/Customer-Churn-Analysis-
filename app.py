@@ -8,4 +8,4 @@ import pandas as pd
 df=pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
 with tab1:
   st.write(df)
-  st.subhead("Basic Statistics")
+  st.subheading("Basic Statistics")
