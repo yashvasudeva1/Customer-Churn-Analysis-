@@ -141,4 +141,89 @@ with tab4:
     - Reviewing high-paying customers and providing loyalty benefits or personalized offers.  
     - Investigating payment issues or friction among customers using electronic checks.
     """)
+
+with tab5:
+    @st.cache_resource
+    def load_model():
+        model = joblib.load("churn_model.pkl")  # replace with your model filename
+        return model
     
+    model = load_model()
+    
+    st.subheader("Enter Customer Information")
+    
+    # Collect user inputs
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        gender = st.selectbox("Gender", ["Male", "Female"])
+        senior = st.selectbox("Senior Citizen", ["No", "Yes"])
+        partner = st.selectbox("Has Partner?", ["No", "Yes"])
+        dependents = st.selectbox("Has Dependents?", ["No", "Yes"])
+    
+    with col2:
+        tenure = st.slider("Tenure (months)", 0, 72, 12)
+        phone_service = st.selectbox("Phone Service", ["Yes", "No"])
+        internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
+        contract = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
+    
+    with col3:
+        paperless = st.selectbox("Paperless Billing", ["Yes", "No"])
+        payment_method = st.selectbox(
+            "Payment Method",
+            ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"]
+        )
+        monthly_charges = st.number_input("Monthly Charges ($)", 0.0, 150.0, 70.0)
+        total_charges = st.number_input("Total Charges ($)", 0.0, 10000.0, 1400.0)
+    
+    # Prepare input for model
+    input_dict = {
+        "gender": gender,
+        "SeniorCitizen": 1 if senior == "Yes" else 0,
+        "Partner": partner,
+        "Dependents": dependents,
+        "tenure": tenure,
+        "PhoneService": phone_service,
+        "InternetService": internet_service,
+        "Contract": contract,
+        "PaperlessBilling": paperless,
+        "PaymentMethod": payment_method,
+        "MonthlyCharges": monthly_charges,
+        "TotalCharges": total_charges
+    }
+    
+    input_df = pd.DataFrame([input_dict])
+    
+    st.write("### Input Summary")
+    st.dataframe(input_df)
+    
+    # Handle categorical encoding (example: if your model used one-hot encoding)
+    # Make sure this matches how your model was trained
+    categorical_cols = [
+        'gender', 'Partner', 'Dependents', 'PhoneService',
+        'InternetService', 'Contract', 'PaperlessBilling', 'PaymentMethod'
+    ]
+    
+    # If you trained your model using OneHotEncoder, load it and transform input
+    try:
+        encoder = joblib.load("encoder.pkl")  # optional if you saved your encoder
+        input_encoded = encoder.transform(input_df[categorical_cols])
+        input_encoded_df = pd.DataFrame(input_encoded, columns=encoder.get_feature_names_out(categorical_cols))
+        final_input = pd.concat([input_encoded_df, input_df[['SeniorCitizen','tenure','MonthlyCharges','TotalCharges']]], axis=1)
+    except:
+        # If encoder not available, just use numerical columns for demonstration
+        final_input = input_df.select_dtypes(include=[np.number])
+    
+    # Predict
+    if st.button("Predict Churn"):
+        prediction = model.predict(final_input)[0]
+        probability = model.predict_proba(final_input)[0][1]
+    
+        st.subheader("Prediction Result")
+        if prediction == 1:
+            st.error(f"The customer is likely to CHURN (Probability: {probability:.2f})")
+        else:
+            st.success(f"The customer is likely to STAY (Probability: {probability:.2f})")
+    
+        st.write("---")
+        st.write("**Model Confidence:**", f"{probability*100:.2f}% that this customer will churn")
