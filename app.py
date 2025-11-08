@@ -143,6 +143,7 @@ with tab4:
     """)
 
 with tab5:
+    import joblib
     @st.cache_resource
     def load_model():
         model = joblib.load("churn_model.pkl")  # replace with your model filename
