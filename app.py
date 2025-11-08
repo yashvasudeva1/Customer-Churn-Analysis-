@@ -21,4 +21,27 @@ with tab1:
   st.write(df.describe())
 
 with tab2:
-  st.write(data_structure_d)
+ st.subheader("Basic Structure")
+ st.write(data_structure_d)
+ st.subheader("About the Dataset")
+ st.markdown("""
+This dataset is sourced from **Kaggle’s Telco Customer Churn** dataset, originally created by **IBM Sample Data Sets**.
+
+**Context:**  
+The goal is to predict customer behavior and identify patterns that lead to **customer churn** — i.e., customers who stop using a service.  
+By analyzing the data, businesses can develop focused **customer retention strategies**.
+
+**Content Overview:**  
+Each row represents a customer, and each column contains attributes describing their demographics, services, and account details.
+
+- **Churn:** Whether the customer left within the last month.  
+- **Services:** Includes phone, multiple lines, internet, online security, online backup, device protection, tech support, and streaming (TV & movies).  
+- **Account Information:** Tenure, contract type, payment method, paperless billing, monthly charges, and total charges.  
+- **Demographics:** Gender, senior citizen status, partner, and dependents.
+
+**Inspiration:**  
+To understand and predict customer churn through exploratory data analysis and machine learning, helping organizations improve customer retention.
+
+**Source:**  
+[IBM Telco Customer Churn Dataset](https://community.ibm.com/community/user/businessanalytics/blogs/steven-macko/2019/07/11/telco-customer-churn-1113)
+""")
