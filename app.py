@@ -47,16 +47,16 @@ To understand and predict customer churn through exploratory data analysis and m
  st.write(data_structure_d)
 with tab3:
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
-if len(numeric_cols) > 0:
-    selected_cols = st.multiselect("Select numeric columns to plot:", numeric_cols)
-
-    if selected_cols:
-        st.line_chart(df[selected_cols])
+    if len(numeric_cols) > 0:
+        selected_cols = st.multiselect("Select numeric columns to plot:", numeric_cols)
+    
+        if selected_cols:
+            st.line_chart(df[selected_cols])
+        else:
+            st.info("Please select at least one column to plot.")
     else:
-        st.info("Please select at least one column to plot.")
-else:
-    st.warning("No numeric columns found in the dataset.")
-st.image('download (1).png')
-st.image('download (2).png')
-st.image('download.png')
-st.image('train vs test.png')
+        st.warning("No numeric columns found in the dataset.")
+    st.image('download (1).png')
+    st.image('download (2).png')
+    st.image('download.png')
+    st.image('train vs test.png')
