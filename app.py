@@ -214,11 +214,11 @@ with tab5:
             recall = recall_score(y, y_pred)
             f1 = f1_score(y, y_pred)
     
-            st.metric("Accuracy", f"{accuracy*100:.2f}%")
-            st.metric("Precision", f"{precision*100:.2f}%")
-            st.metric("Recall", f"{recall*100:.2f}%")
-            st.metric("F1-Score", f"{f1*100:.2f}%")
-            st.write("#### Detailed Classification Report")
-            st.text(classification_report(y, y_pred))
+            st.subheader("Accuracy", f"{accuracy*100:.2f}%")
+            st.subheader("Precision", f"{precision*100:.2f}%")
+            st.subheader("Recall", f"{recall*100:.2f}%")
+            st.subheader("F1-Score", f"{f1*100:.2f}%")
+            st.subheader("#### Detailed Classification Report")
+            st.write(classification_report(y, y_pred))
         except Exception as e:
             st.error(f"Error computing metrics: {e}")
