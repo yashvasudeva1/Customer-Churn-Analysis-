@@ -197,7 +197,7 @@ with tab5:
             st.write(f"Model confidence: {probability*100:.2f}%")
         except Exception as e:
             st.error(f"Error during prediction: {e}")
-       st.divider()
+        st.divider()
         st.subheader("Model Performance Metrics")
     
         if st.button("Show Model Metrics"):
