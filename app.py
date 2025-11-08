@@ -150,6 +150,7 @@ with tab5:
         return model
     
     model = load_model()
+
     
     st.subheader("Enter Customer Details")
     
