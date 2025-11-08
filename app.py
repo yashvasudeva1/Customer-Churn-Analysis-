@@ -218,7 +218,7 @@ with tab5:
             st.metric("Precision", f"{precision*100:.2f}%")
             st.metric("Recall", f"{recall*100:.2f}%")
             st.metric("F1-Score", f"{f1*100:.2f}%")
-            st.metric("#### Detailed Classification Report")
+            st.write("#### Detailed Classification Report")
             st.text(classification_report(y, y_pred))
         except Exception as e:
             st.error(f"Error computing metrics: {e}")
