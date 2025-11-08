@@ -144,18 +144,13 @@ with tab4:
 
 with tab5:
     st.set_page_config(page_title="Telco Customer Churn Prediction", layout="wide")
-    
-    st.title("Telco Customer Churn Prediction App (No Pipeline)")
-    
-    # Load model and encoder
     @st.cache_resource
-    def load_artifacts():
-        model = joblib.load("churn_pipeline.pkl")         
+    def load_model():
+        model = joblib.load("churn_pipeline.pkl")
         return model
     
-    model, encoder, feature_order = load_artifacts()
+    model = load_model()
     
-    # --- USER INPUT ---
     st.subheader("Enter Customer Details")
     
     col1, col2, col3 = st.columns(3)
@@ -181,7 +176,6 @@ with tab5:
         monthly_charges = st.number_input("Monthly Charges ($)", 0.0, 150.0, 70.0)
         total_charges = st.number_input("Total Charges ($)", 0.0, 10000.0, 1400.0)
     
-    # --- CREATE DATAFRAME ---
     input_data = pd.DataFrame([{
         "gender": gender,
         "SeniorCitizen": 1 if senior == "Yes" else 0,
@@ -200,31 +194,10 @@ with tab5:
     st.write("### Input Summary")
     st.dataframe(input_data)
     
-    # --- MANUAL PREPROCESSING ---
-    categorical_cols = [
-        'gender', 'Partner', 'Dependents', 'PhoneService',
-        'InternetService', 'Contract', 'PaperlessBilling', 'PaymentMethod'
-    ]
-    numeric_cols = ['SeniorCitizen', 'tenure', 'MonthlyCharges', 'TotalCharges']
-    
-    # Encode categorical columns
-    encoded_array = encoder.transform(input_data[categorical_cols])
-    encoded_df = pd.DataFrame(encoded_array, columns=encoder.get_feature_names_out(categorical_cols))
-    
-    # Combine numeric and encoded features
-    final_input = pd.concat([encoded_df, input_data[numeric_cols]], axis=1)
-    
-    # Optional: ensure column order matches training
-    if feature_order is not None:
-        final_input = final_input.reindex(columns=feature_order, fill_value=0)
-    
-    # --- PREDICTION ---
     if st.button("Predict Churn"):
         try:
-            pipeline = joblib.load("churn_pipeline.pkl")
-            prediction = pipeline.predict(input_df)
-            probability = pipeline.predict_proba(input_df)[0][1]
-
+            prediction = model.predict(input_data)[0]
+            probability = model.predict_proba(input_data)[0][1]
     
             st.subheader("Prediction Result")
             if prediction == 1:
@@ -235,4 +208,3 @@ with tab5:
             st.write(f"Model confidence: {probability*100:.2f}%")
         except Exception as e:
             st.error(f"Error during prediction: {e}")
-            st.write("The input feature count or order likely doesn't match what your model expects.")
