@@ -1,28 +1,33 @@
 import streamlit as st
-st.title("Customer Churn Analysis")
-st.write("This project analyzes customer data to understand and predict churn — identifying customers who are likely to discontinue a service. By uncovering key behavioral and demographic factors behind churn, this analysis helps businesses make data-driven retention decisions.")
-tab1,tab2,tab3,tab4,tab5=st.tabs(["Overview","About Data","Visualisation","Findings","Prediction"])
 import joblib
 import numpy as np
 import pandas as pd
-df=pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
-num_rows, num_cols=df.shape
-numerical_features=df.select_dtypes(include=np.number).shape[1]
-categorical_features=df.select_dtypes(include='object').shape[1]
-data_structure={
+
+st.set_page_config(page_title="Customer Churn Analysis", layout="wide")
+st.title("Customer Churn Analysis")
+st.write("This project analyzes customer data to understand and predict churn — identifying customers who are likely to discontinue a service. By uncovering key behavioral and demographic factors behind churn, this analysis helps businesses make data-driven retention decisions.")
+
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["Overview", "About Data", "Visualisation", "Findings", "Prediction"])
+
+df = pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
+num_rows, num_cols = df.shape
+numerical_features = df.select_dtypes(include=np.number).shape[1]
+categorical_features = df.select_dtypes(include='object').shape[1]
+data_structure = {
     'Metric': ['Number of Rows', 'Number of Columns', 'Numerical Features', 'Categorical Features'],
     'Count': [num_rows, num_cols, numerical_features, categorical_features]
 }
-data_structure_d=pd.DataFrame(data_structure)
+data_structure_d = pd.DataFrame(data_structure)
+
 with tab1:
-  st.subheader("Dataset Overview")
-  st.write(df)
-  st.subheader("Basic Statistics")
-  st.write(df.describe())
+    st.subheader("Dataset Overview")
+    st.write(df)
+    st.subheader("Basic Statistics")
+    st.write(df.describe())
 
 with tab2:
- st.subheader("About the Dataset")
- st.markdown("""
+    st.subheader("About the Dataset")
+    st.markdown("""
 This dataset is sourced from **Kaggle’s Telco Customer Churn** dataset, originally created by **IBM Sample Data Sets**.
 
 **Context:**  
@@ -43,13 +48,13 @@ To understand and predict customer churn through exploratory data analysis and m
 **Source:**  
 [IBM Telco Customer Churn Dataset](https://community.ibm.com/community/user/businessanalytics/blogs/steven-macko/2019/07/11/telco-customer-churn-1113)
 """)
- st.subheader("Basic Structure")
- st.write(data_structure_d)
+    st.subheader("Basic Structure")
+    st.write(data_structure_d)
+
 with tab3:
     numeric_cols = df.select_dtypes(include=['int64', 'float64']).columns.tolist()
     if len(numeric_cols) > 0:
         selected_cols = st.multiselect("Select numeric columns to plot:", numeric_cols)
-    
         if selected_cols:
             st.line_chart(df[selected_cols])
         else:
@@ -63,7 +68,6 @@ with tab3:
 
 with tab4:
     st.markdown("### Main Findings and Insights")
-    
     st.markdown("#### 1. Churners usually have higher MonthlyCharges")
     st.write("""
     When I compared the monthly charges of customers who stayed versus those who left, 
@@ -72,7 +76,6 @@ with tab4:
     which is extremely small. This means the difference is statistically significant, 
     and I can confidently conclude that customers who churn generally pay more each month.
     """)
-    
     st.markdown("#### 2. Customers who churn generally have shorter tenures")
     st.write("""
     I also examined how long customers have been with the company.  
@@ -80,7 +83,6 @@ with tab4:
     are usually newer and have much shorter tenures.  
     In simple terms, people who have recently joined are more likely to leave early.
     """)
-    
     st.markdown("#### 3. Contract type, payment method, and internet service are strongly linked to churn")
     st.write("""
     When I ran Chi-square tests on categorical variables like contract type, payment method, 
@@ -92,7 +94,6 @@ with tab4:
     - Those paying through electronic checks have higher churn rates.  
     - Customers without long-term contracts (such as one- or two-year plans) tend to leave more often.
     """)
-    
     st.markdown("#### 4. Numeric relationships and correlations")
     st.write("""
     There is a clear positive relationship between tenure and TotalCharges, 
@@ -101,7 +102,6 @@ with tab4:
     indicating that higher-paying customers are slightly more likely to leave.  
     These findings were confirmed through correlation matrices and visual analysis.
     """)
-    
     st.markdown("#### 5. Data quality and missing values")
     st.write("""
     During analysis, I noticed a few missing values in the TotalCharges column.  
@@ -109,7 +109,6 @@ with tab4:
     likely those who just joined.  
     It would be reasonable to either impute these missing values as zero or remove those rows entirely before modeling.
     """)
-    
     st.markdown("#### 6. Observations from distributions and visuals")
     st.write("""
     The distribution of tenure is heavily skewed toward lower values, 
@@ -119,11 +118,8 @@ with tab4:
     Boxplots show a clear difference in median MonthlyCharges between churned and retained customers, 
     with churned customers generally paying higher amounts.
     """)
-    
     st.divider()
-    
     st.markdown("## Practical Conclusions and Recommendations")
-    
     st.markdown("#### High-Risk Churn Profile")
     st.write("""
     Based on the findings, customers most likely to churn are those who:
@@ -132,7 +128,6 @@ with tab4:
     - Pay higher monthly charges, or  
     - Use electronic check as their payment method.
     """)
-    
     st.markdown("#### Recommended Business Actions")
     st.write("""
     If I were to propose next steps for the business, I would recommend:
@@ -143,46 +138,35 @@ with tab4:
     """)
 
 with tab5:
-    import streamlit as st
-    import pandas as pd
-    import joblib
-    
-    st.set_page_config(page_title="Telco Customer Churn Prediction", layout="wide")
-    
-    st.title("Telco Customer Churn Prediction App")
-    
+    st.subheader("Telco Customer Churn Prediction App")
+
     @st.cache_resource
     def load_model():
-        model = joblib.load("churn_pipeline.pkl")
-        return model
-    
+        return joblib.load("churn_pipeline.pkl")
+
     model = load_model()
-    
+
     st.subheader("Enter Customer Details")
-    
     col1, col2, col3 = st.columns(3)
-    
+
     with col1:
         gender = st.selectbox("Gender", ["Male", "Female"])
         senior = st.selectbox("Senior Citizen", ["No", "Yes"])
         partner = st.selectbox("Partner", ["No", "Yes"])
         dependents = st.selectbox("Dependents", ["No", "Yes"])
-    
+
     with col2:
         tenure = st.slider("Tenure (months)", 0, 72, 12)
         phone_service = st.selectbox("Phone Service", ["Yes", "No"])
         internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
         contract = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
-    
+
     with col3:
         paperless = st.selectbox("Paperless Billing", ["Yes", "No"])
-        payment_method = st.selectbox(
-            "Payment Method",
-            ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"]
-        )
+        payment_method = st.selectbox("Payment Method", ["Electronic check", "Mailed check", "Bank transfer (automatic)", "Credit card (automatic)"])
         monthly_charges = st.number_input("Monthly Charges ($)", 0.0, 150.0, 70.0)
         total_charges = st.number_input("Total Charges ($)", 0.0, 10000.0, 1400.0)
-    
+
     input_data = pd.DataFrame([{
         "gender": gender,
         "SeniorCitizen": 1 if senior == "Yes" else 0,
@@ -197,22 +181,19 @@ with tab5:
         "MonthlyCharges": monthly_charges,
         "TotalCharges": total_charges
     }])
-    
+
     st.write("### Input Summary")
     st.dataframe(input_data)
-    
+
     if st.button("Predict Churn"):
         try:
             prediction = model.predict(input_data)[0]
             probability = model.predict_proba(input_data)[0][1]
-    
             st.subheader("Prediction Result")
             if prediction == 1:
                 st.error(f"The customer is likely to CHURN (probability = {probability:.2f})")
             else:
                 st.success(f"The customer is likely to STAY (probability = {probability:.2f})")
-    
             st.write(f"Model confidence: {probability*100:.2f}%")
         except Exception as e:
-            st.error(f"Error during prediction: {e}")    
-
+            st.error(f"Error during prediction: {e}")
