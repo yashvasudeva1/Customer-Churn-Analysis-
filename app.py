@@ -1,2 +1,2 @@
 import streamlit as st
-st.head("Hello")
+st.title("Hello")
