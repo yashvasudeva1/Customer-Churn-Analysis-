@@ -143,24 +143,30 @@ with tab4:
     """)
 
 with tab5:
-    import joblib
+    st.set_page_config(page_title="Telco Customer Churn Prediction", layout="wide")
+    
+    st.title("Telco Customer Churn Prediction App (No Pipeline)")
+    
+    # Load model and encoder
     @st.cache_resource
-    def load_model():
-        model = joblib.load("churn_model.pkl")  # replace with your model filename
-        return model
+    def load_artifacts():
+        model = joblib.load("churn_model.pkl")          # your trained logistic regression model
+        encoder = joblib.load("encoder.pkl")            # OneHotEncoder used during training
+        feature_order = joblib.load("feature_order.pkl")  # list of final feature names used (optional, if saved)
+        return model, encoder, feature_order
     
-    model = load_model()
+    model, encoder, feature_order = load_artifacts()
     
-    st.subheader("Enter Customer Information")
+    # --- USER INPUT ---
+    st.subheader("Enter Customer Details")
     
-    # Collect user inputs
     col1, col2, col3 = st.columns(3)
     
     with col1:
         gender = st.selectbox("Gender", ["Male", "Female"])
         senior = st.selectbox("Senior Citizen", ["No", "Yes"])
-        partner = st.selectbox("Has Partner?", ["No", "Yes"])
-        dependents = st.selectbox("Has Dependents?", ["No", "Yes"])
+        partner = st.selectbox("Partner", ["No", "Yes"])
+        dependents = st.selectbox("Dependents", ["No", "Yes"])
     
     with col2:
         tenure = st.slider("Tenure (months)", 0, 72, 12)
@@ -177,8 +183,8 @@ with tab5:
         monthly_charges = st.number_input("Monthly Charges ($)", 0.0, 150.0, 70.0)
         total_charges = st.number_input("Total Charges ($)", 0.0, 10000.0, 1400.0)
     
-    # Prepare input for model
-    input_dict = {
+    # --- CREATE DATAFRAME ---
+    input_data = pd.DataFrame([{
         "gender": gender,
         "SeniorCitizen": 1 if senior == "Yes" else 0,
         "Partner": partner,
@@ -191,40 +197,42 @@ with tab5:
         "PaymentMethod": payment_method,
         "MonthlyCharges": monthly_charges,
         "TotalCharges": total_charges
-    }
-    
-    input_df = pd.DataFrame([input_dict])
+    }])
     
     st.write("### Input Summary")
-    st.dataframe(input_df)
+    st.dataframe(input_data)
     
-    # Handle categorical encoding (example: if your model used one-hot encoding)
-    # Make sure this matches how your model was trained
+    # --- MANUAL PREPROCESSING ---
     categorical_cols = [
         'gender', 'Partner', 'Dependents', 'PhoneService',
         'InternetService', 'Contract', 'PaperlessBilling', 'PaymentMethod'
     ]
+    numeric_cols = ['SeniorCitizen', 'tenure', 'MonthlyCharges', 'TotalCharges']
     
-    # If you trained your model using OneHotEncoder, load it and transform input
-    try:
-        encoder = joblib.load("encoder.pkl")  # optional if you saved your encoder
-        input_encoded = encoder.transform(input_df[categorical_cols])
-        input_encoded_df = pd.DataFrame(input_encoded, columns=encoder.get_feature_names_out(categorical_cols))
-        final_input = pd.concat([input_encoded_df, input_df[['SeniorCitizen','tenure','MonthlyCharges','TotalCharges']]], axis=1)
-    except:
-        # If encoder not available, just use numerical columns for demonstration
-        final_input = input_df.select_dtypes(include=[np.number])
+    # Encode categorical columns
+    encoded_array = encoder.transform(input_data[categorical_cols])
+    encoded_df = pd.DataFrame(encoded_array, columns=encoder.get_feature_names_out(categorical_cols))
     
-    # Predict
+    # Combine numeric and encoded features
+    final_input = pd.concat([encoded_df, input_data[numeric_cols]], axis=1)
+    
+    # Optional: ensure column order matches training
+    if feature_order is not None:
+        final_input = final_input.reindex(columns=feature_order, fill_value=0)
+    
+    # --- PREDICTION ---
     if st.button("Predict Churn"):
-        prediction = model.predict(final_input)[0]
-        probability = model.predict_proba(final_input)[0][1]
+        try:
+            prediction = model.predict(final_input)[0]
+            probability = model.predict_proba(final_input)[0][1]
     
-        st.subheader("Prediction Result")
-        if prediction == 1:
-            st.error(f"The customer is likely to CHURN (Probability: {probability:.2f})")
-        else:
-            st.success(f"The customer is likely to STAY (Probability: {probability:.2f})")
+            st.subheader("Prediction Result")
+            if prediction == 1:
+                st.error(f"The customer is likely to CHURN (probability = {probability:.2f})")
+            else:
+                st.success(f"The customer is likely to STAY (probability = {probability:.2f})")
     
-        st.write("---")
-        st.write("**Model Confidence:**", f"{probability*100:.2f}% that this customer will churn")
+            st.write(f"Model confidence: {probability*100:.2f}%")
+        except Exception as e:
+            st.error(f"Error during prediction: {e}")
+            st.write("The input feature count or order likely doesn't match what your model expects.")
