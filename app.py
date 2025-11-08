@@ -7,5 +7,8 @@ import numpy as np
 import pandas as pd
 df=pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
 with tab1:
+  st.subheader("Dataset Overview")
   st.write(df)
   st.subheader("Basic Statistics")
+  st.write(df.describe())
+
