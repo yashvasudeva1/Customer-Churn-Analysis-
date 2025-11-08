@@ -223,8 +223,10 @@ with tab5:
     # --- PREDICTION ---
     if st.button("Predict Churn"):
         try:
-            prediction = model.predict(final_input)[0]
-            probability = model.predict_proba(final_input)[0][1]
+            pipeline = joblib.load("churn_pipeline.pkl")
+            prediction = pipeline.predict(input_df)
+            probability = pipeline.predict_proba(input_df)[0][1]
+
     
             st.subheader("Prediction Result")
             if prediction == 1:
