@@ -5,4 +5,7 @@ tab1,tab2,tab3,tab4=st.tabs(["Overview","About Data","Visualisation","Prediction
 
 import numpy as np
 import pandas as pd
-# df=pd.read_csv()
+df=pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
+with tab1:
+  st.write(df)
+  st.subhead("Basic Statistics")
