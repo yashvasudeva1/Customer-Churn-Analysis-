@@ -143,14 +143,20 @@ with tab4:
     """)
 
 with tab5:
+    import streamlit as st
+    import pandas as pd
+    import joblib
+    
     st.set_page_config(page_title="Telco Customer Churn Prediction", layout="wide")
+    
+    st.title("Telco Customer Churn Prediction App")
+    
     @st.cache_resource
     def load_model():
         model = joblib.load("churn_pipeline.pkl")
         return model
     
     model = load_model()
-
     
     st.subheader("Enter Customer Details")
     
@@ -208,4 +214,5 @@ with tab5:
     
             st.write(f"Model confidence: {probability*100:.2f}%")
         except Exception as e:
-            st.error(f"Error during prediction: {e}")
+            st.error(f"Error during prediction: {e}")    
+
