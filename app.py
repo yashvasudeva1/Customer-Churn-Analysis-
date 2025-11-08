@@ -1,7 +1,7 @@
 import streamlit as st
 st.title("Customer Churn Analysis")
 st.write("This project analyzes customer data to understand and predict churn — identifying customers who are likely to discontinue a service. By uncovering key behavioral and demographic factors behind churn, this analysis helps businesses make data-driven retention decisions.")
-tab1,tab2,tab3,tab4=st.tabs(["Overview","About Data","Visualisation","Prediction"])
+tab1,tab2,tab3,tab4,tab5=st.tabs(["Overview","About Data","Visualisation","Findings","Prediction"])
 
 import numpy as np
 import pandas as pd
@@ -60,3 +60,85 @@ with tab3:
     st.image('download (2).png')
     st.image('download.png')
     st.image('train vs test.png')
+
+with tab4:
+    st.markdown("### Main Findings and Insights")
+    
+    st.markdown("#### 1. Churners usually have higher MonthlyCharges")
+    st.write("""
+    When I compared the monthly charges of customers who stayed versus those who left, 
+    I found that churners tend to pay noticeably higher monthly charges.  
+    The Mann–Whitney U test produced a p-value of approximately 3.31e-54, 
+    which is extremely small. This means the difference is statistically significant, 
+    and I can confidently conclude that customers who churn generally pay more each month.
+    """)
+    
+    st.markdown("#### 2. Customers who churn generally have shorter tenures")
+    st.write("""
+    I also examined how long customers have been with the company.  
+    The test results (p ≈ 2.42e-208) clearly indicate that customers who churn 
+    are usually newer and have much shorter tenures.  
+    In simple terms, people who have recently joined are more likely to leave early.
+    """)
+    
+    st.markdown("#### 3. Contract type, payment method, and internet service are strongly linked to churn")
+    st.write("""
+    When I ran Chi-square tests on categorical variables like contract type, payment method, 
+    and internet service, the p-values were all extremely small (much less than 0.001).  
+    This shows a strong statistical association with churn.
+    
+    Here’s what I observed:
+    - Customers on month-to-month contracts are much more likely to churn.  
+    - Those paying through electronic checks have higher churn rates.  
+    - Customers without long-term contracts (such as one- or two-year plans) tend to leave more often.
+    """)
+    
+    st.markdown("#### 4. Numeric relationships and correlations")
+    st.write("""
+    There is a clear positive relationship between tenure and TotalCharges, 
+    which makes sense since customers who stay longer pay more in total.  
+    MonthlyCharges also show a positive correlation with churn, 
+    indicating that higher-paying customers are slightly more likely to leave.  
+    These findings were confirmed through correlation matrices and visual analysis.
+    """)
+    
+    st.markdown("#### 5. Data quality and missing values")
+    st.write("""
+    During analysis, I noticed a few missing values in the TotalCharges column.  
+    After reviewing, I found that these correspond to customers with tenure equal to zero, 
+    likely those who just joined.  
+    It would be reasonable to either impute these missing values as zero or remove those rows entirely before modeling.
+    """)
+    
+    st.markdown("#### 6. Observations from distributions and visuals")
+    st.write("""
+    The distribution of tenure is heavily skewed toward lower values, 
+    meaning there are many new customers in the dataset.  
+    MonthlyCharges is right-skewed, with most customers paying lower amounts 
+    and a few paying significantly more.  
+    Boxplots show a clear difference in median MonthlyCharges between churned and retained customers, 
+    with churned customers generally paying higher amounts.
+    """)
+    
+    st.divider()
+    
+    st.markdown("## Practical Conclusions and Recommendations")
+    
+    st.markdown("#### High-Risk Churn Profile")
+    st.write("""
+    Based on the findings, customers most likely to churn are those who:
+    - Have month-to-month contracts,  
+    - Are new or have low tenure,  
+    - Pay higher monthly charges, or  
+    - Use electronic check as their payment method.
+    """)
+    
+    st.markdown("#### Recommended Business Actions")
+    st.write("""
+    If I were to propose next steps for the business, I would recommend:
+    - Encouraging month-to-month customers to switch to one- or two-year contracts through discounts or bundled offers.  
+    - Engaging newly joined customers with onboarding campaigns and retention programs.  
+    - Reviewing high-paying customers and providing loyalty benefits or personalized offers.  
+    - Investigating payment issues or friction among customers using electronic checks.
+    """)
+    
