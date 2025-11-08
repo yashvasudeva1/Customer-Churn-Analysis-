@@ -150,10 +150,8 @@ with tab5:
     # Load model and encoder
     @st.cache_resource
     def load_artifacts():
-        model = joblib.load("churn_model.pkl")          # your trained logistic regression model
-        encoder = joblib.load("encoder.pkl")            # OneHotEncoder used during training
-        feature_order = joblib.load("feature_order.pkl")  # list of final feature names used (optional, if saved)
-        return model, encoder, feature_order
+        model = joblib.load("churn_pipeline.pkl")         
+        return model
     
     model, encoder, feature_order = load_artifacts()
     
