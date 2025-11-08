@@ -21,4 +21,4 @@ with tab1:
   st.write(df.describe())
 
 with tab2:
-  st.write(data_structure)
+  st.write(data_structure_D)
