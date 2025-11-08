@@ -197,3 +197,34 @@ with tab5:
             st.write(f"Model confidence: {probability*100:.2f}%")
         except Exception as e:
             st.error(f"Error during prediction: {e}")
+       st.divider()
+        st.subheader("Model Performance Metrics")
+    
+        if st.button("Show Model Metrics"):
+            try:
+                df_test = pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
+                df_test["TotalCharges"] = pd.to_numeric(df_test["TotalCharges"], errors="coerce")
+                df_test = df_test.dropna(subset=["TotalCharges"])
+                df_test["Churn"] = df_test["Churn"].map({"Yes": 1, "No": 0})
+    
+                X = df_test.drop("Churn", axis=1)
+                y = df_test["Churn"]
+    
+                y_pred = model.predict(X)
+    
+                from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, classification_report
+    
+                accuracy = accuracy_score(y, y_pred)
+                precision = precision_score(y, y_pred)
+                recall = recall_score(y, y_pred)
+                f1 = f1_score(y, y_pred)
+    
+                st.metric("Accuracy", f"{accuracy*100:.2f}%")
+                st.metric("Precision", f"{precision*100:.2f}%")
+                st.metric("Recall", f"{recall*100:.2f}%")
+                st.metric("F1-Score", f"{f1*100:.2f}%")
+    
+                st.write("#### Detailed Classification Report")
+                st.text(classification_report(y, y_pred))
+            except Exception as e:
+                st.error(f"Error computing metrics: {e}")
