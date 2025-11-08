@@ -56,3 +56,7 @@ if len(numeric_cols) > 0:
         st.info("Please select at least one column to plot.")
 else:
     st.warning("No numeric columns found in the dataset.")
+st.image('download (1).png')
+st.image('download (2).png')
+st.image('download.png')
+st.image('train vs test.png')
